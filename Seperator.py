@@ -133,3 +133,7 @@ new_x = librosa.istft(S_background * phase)
 sf.write("Instruments.wav", new_x, sr, 'PCM_24')
 
 print("Done Saving")
+
+print("Separation Complete")
+
+# TO-DO - Get the pitch of each vocal track
