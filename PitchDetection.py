@@ -14,25 +14,71 @@ def checkMatchingChords(chord1, chord2):
     # C# major – C# E# G#
     cs_majour = ["C#", "E#", "G#"]
     # D major – D F# A
-    major = ["D", "F#", "A"]
+    d_major = ["D", "F#", "A"]
     # Eb major – Eb G Bb
-    major = ["Eb", "G", "Bb"]
+    Eb_major = ["Eb", "G", "Bb"]
     # E major – E G# B
-    major = ["E", "G#", "B"]
+    E_major = ["E", "G#", "B"]
     # F major – F A C
-    major = ["F", "A", "C"]
+    F_major = ["F", "A", "C"]
     # F# major – F# A# C#
-    major = ["F#", "A#", "C#"]
+    Fs_major = ["F#", "A#", "C#"]
     # G major – G B D
-    major = ["G", "B", "D"]
+    G_major = ["G", "B", "D"]
     # Ab major – Ab C Eb
-    major = ["Ab", "C", "Eb"]
+    Ab_major = ["Ab", "C", "Eb"]
     # A major – A C# E
-    major = ["A", "C#", "E"]
+    A_major = ["A", "C#", "E"]
     # Bb major – Bb D F
-    major = ["Bb", "D", "F"]
+    Bb_major = ["Bb", "D", "F"]
     # B major – B D# F#
-    major = ["B", "D#", "F#"]
+    B_major = ["B", "D#", "F#"]
+    # C minor (Cm). C - Eb - G
+    C_minor = ["B", "D#", "F#"]
+    # C# minor (C#m). C# - E - G#
+    cs_minor = ["B", "D#", "F#"]
+    # D minor (Dm). D - F -A
+    d_minor = ["D", "F", "A"]
+    # Eb minor (Ebm). Eb - Gb - Bb
+    Eb_minor = ["Eb", "Gb", "Bb"]
+    # E minor (Em). E - G - B
+    E_minor = ["E", "G", "B"]
+    # F minor (Fm). F - Ab - C
+    F_minor = ["F", "Ab", "C"]
+    # F# minor (F#m). F# - A - C#
+    Fs_minor = ["F#", "A", "C#"]
+    # G minor (Gm). G - Bb - D
+    G_minor = ["G", "Bb", "D"]
+    # Ab minor (Abm). Ab - Cb - Eb
+    Ab_minor = ["Ab", "Cb", "Eb"]
+    # A minor (Am). A - C - E
+    
+    # Bb minor (Bbm). Bb - Db - F
+    # B minor (Bm). B - D - F#
+    # C diminished (Cdim). C - Eb - Gb
+    # C# diminished (C#dim). C# - E - G
+    # D diminished (Ddim). D - F - Ab
+    # D# diminished (D#dim). D# - F# - A
+    # E diminished (Edim). E - G - Bb
+    # F diminished (Fdim). F - Ab - Cb
+    # F# diminished (F#dim). F# - A - C
+    # G diminished (Gdim). G - Bb - Db
+    # G# diminished (G#dim). G# - B - D
+    # A diminished (Adim). A - C - Eb
+    # A# diminished (A#dim). A# - C# - E
+    # B diminished (Bdim). B - D - F
+    # C augmented (Caug). C - E - G#
+    # C# augmented (C#aug). C# - E# - G##
+    # D augmented (Daug). D - F# - A#
+    # D# augmented (D#aug). D# - F## - A##
+    # E augmented (Eaug). E - G# - B#
+    # F augmented (Faug). F - A - C#
+    # F# augmented (F#aug). F# - A# - C##
+    # G augmented (Gaug). G - B - D#
+    # G# augmented (G#aug). G# - B# - D##
+    # A augmented (Aaug). A - C# - E#
+    # A# augmented (A#aug). A# - C## - E##
+    # B augmented (Baug). B - D# - F## 
 
 
 def GetPitch(file):
