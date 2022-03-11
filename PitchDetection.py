@@ -8,6 +8,32 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from math import log2, pow
 
+def checkMatchingChords(chord1, chord2):
+    # C major – C E G
+    c_majour = ["C", "E", "G"]
+    # C# major – C# E# G#
+    cs_majour = ["C#", "E#", "G#"]
+    # D major – D F# A
+    major = ["D", "F#", "A"]
+    # Eb major – Eb G Bb
+    major = ["Eb", "G", "Bb"]
+    # E major – E G# B
+    major = ["E", "G#", "B"]
+    # F major – F A C
+    major = ["F", "A", "C"]
+    # F# major – F# A# C#
+    major = ["F#", "A#", "C#"]
+    # G major – G B D
+    major = ["G", "B", "D"]
+    # Ab major – Ab C Eb
+    major = ["Ab", "C", "Eb"]
+    # A major – A C# E
+    major = ["A", "C#", "E"]
+    # Bb major – Bb D F
+    major = ["Bb", "D", "F"]
+    # B major – B D# F#
+    major = ["B", "D#", "F#"]
+
 
 def GetPitch(file):
     # Load in librosa's example audio file at its native sampling rate
@@ -39,10 +65,16 @@ plt.plot(itime, ifrequency, label="Instruments")
 plt.plot(time, frequency, label="Vocals")
 plt.savefig('DetectedPitchComparison.png')
 
+plt.clf()
+plt.cla()
+
 plt.plot(itime, ifrequency, label="Instruments")
 plt.show()
 plt.plot(itime, ifrequency, label="Instruments")
 plt.savefig('DetectedPitchInstrumental.png')
+
+plt.clf()
+plt.cla()
 
 plt.plot(time, frequency, label="Vocals")
 plt.show()
@@ -108,10 +140,23 @@ for t, If, ff, pn, ipn, mn in zip(time, ifrequency, filteredFreq, pitchNotation,
     print(t, ",", If, ",", ff, ",", pn, ",", ipn, ",", mn, "\n")
 
 
-def GetTheDifference(t, pN, iN, mN):
+def GetTheDifference(t, insfreq, filfreq, pitchNotation, instrumentalNotation):
+    diff_matching_notes = []
     diff = []
-    for ts in t:
-        print(t, pN, iN, mN)
+    print("Musical Notation Comparison")
+    for iF, fF, pN, iN in zip(insfreq, filfreq, pitchNotation, instrumentalNotation):
+
+        if iF - fF is not 0:
+            if pN == iN:
+                print("Matching Notes: ", iF - fF)
+                diff_matching_notes.append(iF-fF)
+                diff.append(iF-fF)
+
+    return diff
 
 
-GetTheDifference(time, pitchNotation, instrumentalNotation, midiNotation)
+Grading = GetTheDifference(time, ifrequency, filteredFreq, pitchNotation, instrumentalNotation)
+
+avgGrade = sum(Grading)/ len(Grading)
+
+print("Average Grading For Matching Notes:", (100-avgGrade), "%")

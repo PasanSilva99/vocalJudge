@@ -127,7 +127,7 @@ plt.show()
 print("Saving Output")
 
 new_y = librosa.istft(S_foreground * phase)
-sf.write("./VocalsSeperated.wav", new_y, sr, 'PCM_24')
+sf.write("VocalsSeperated.wav", new_y, sr, 'PCM_24')
 
 new_x = librosa.istft(S_background * phase)
 sf.write("Instruments.wav", new_x, sr, 'PCM_24')
