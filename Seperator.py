@@ -8,11 +8,11 @@ import librosa
 
 import librosa.display
 
-def Seperate(music_track):
 
+def Separate(music_track):
     #############################################
     # Load an example with vocals.
-    y, sr = librosa.load('Happier.wav')
+    y, sr = librosa.load('InputAudio.wav')
     print("File Loaded. ")
     print("Starting Separation")
     # And compute the spectrogram magnitude and phase
@@ -115,3 +115,6 @@ def Seperate(music_track):
     print("Done Saving")
 
     print("Separation Complete")
+
+
+Separate('InputAudio.wav')

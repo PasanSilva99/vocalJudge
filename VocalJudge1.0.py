@@ -315,7 +315,7 @@ def start_analysis(vocal_track, instrumental_track, progress, canvas):
         print("Starting Separation")
         canvas.itemconfig(progress, text="Separation Started")
         time.sleep(5)
-        Seperator.Seperate(vocal_track)
+        Seperator.Separate(vocal_track)
         canvas.itemconfig(progress, text="Separation Completed")
         print("Separation Completed")
         print("===============================================")
