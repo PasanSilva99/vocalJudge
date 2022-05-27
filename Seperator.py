@@ -9,16 +9,14 @@ import librosa
 import librosa.display
 
 
-def Separate(music_track):
-    #############################################
+def Seperate(music_track):
     # Load an example with vocals.
-    y, sr = librosa.load('InputAudio.wav')
+    y, sr = librosa.load(music_track)
     print("File Loaded. ")
     print("Starting Separation")
     # And compute the spectrogram magnitude and phase
     S_full, phase = librosa.magphase(librosa.stft(y))
 
-    #######################################
     # Plot a 5-second slice of the spectrum
     idx = slice(*librosa.time_to_frames([30, 35], sr=sr))
     plt.figure(figsize=(12, 4))
@@ -27,37 +25,13 @@ def Separate(music_track):
     plt.colorbar()
     plt.tight_layout()
 
-    ###########################################################
-    # The wiggly lines above are due to the vocal component.
-    # Our goal is to separate them from the accompanying
-    # instrumentation.
-    #
-
-    # We'll compare frames using cosine similarity, and aggregate similar frames
-    # by taking their (per-frequency) median value.
-    #
-    # To avoid being biased by local continuity, we constrain similar frames to be
-    # separated by at least 2 seconds.
-    #
-    # This suppresses sparse/non-repetetitive deviations from the average spectrum,
-    # and works well to discard vocal elements.
-
     S_filter = librosa.decompose.nn_filter(S_full,
                                            aggregate=np.median,
                                            metric='cosine',
                                            width=int(librosa.time_to_frames(2, sr=sr)))
 
-    # The output of the filter shouldn't be greater than the input
-    # if we assume signals are additive.  Taking the pointwise minimium
-    # with the input spectrum forces this.
     S_filter = np.minimum(S_full, S_filter)
 
-    ##############################################
-    # The raw filter output can be used as a mask,
-    # but it sounds better if we use soft-masking.
-
-    # We can also use a margin to reduce bleed between the vocals and instrumentation masks.
-    # Note: the margins need not be equal for foreground and background separation
     print("Masking Vocal and Instruments")
     margin_i, margin_v = 5, 4
     power = 2
@@ -75,9 +49,6 @@ def Separate(music_track):
 
     S_foreground = mask_v * S_full
     S_background = mask_i * S_full
-
-    ##########################################
-    # Plot the same slice, but separated into its foreground and background
 
     # sphinx_gallery_thumbnail_number = 2
     print("Plot Full Spectrum")
@@ -117,4 +88,4 @@ def Separate(music_track):
     print("Separation Complete")
 
 
-Separate('InputAudio.wav')
+Seperate('SandaAndura.wav')

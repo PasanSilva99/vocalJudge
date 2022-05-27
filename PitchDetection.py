@@ -142,63 +142,75 @@ def GetPitch(file):
     return crepe.predict(audio, sr, viterbi=True, step_size=500)
 
 
-print("Detecting pitch for Vocal Track")
-time, frequency, confidence, activation = GetPitch('T2Vocal.wav')
+# print("Detecting pitch for Vocal Track")
+time, frequency, confidence, activation = GetPitch('Instrumentals.wav')
 
-print("Detecting pitch for Instrumental Track")
-itime, ifrequency, iconfidence, iactivation = GetPitch('T2Instrumental.wav')
-print("Pitch Detection Complete")
+# print("Detecting pitch for Instrumental Track")
+itime, ifrequency, iconfidence, iactivation = GetPitch('Vocals.wav')
+
+
+# print("Pitch Detection Complete")
 
 
 def SavePlots(i_time, i_frequency, _time, _frequency):
-    print("Plotting detected data")
-    plt.plot(i_time, i_frequency, label="Instruments")
-    plt.plot(_time, _frequency, label="Vocals")
-    plt.show()
-    plt.plot(i_time, i_frequency, label="Instruments")
-    plt.plot(_time, _frequency, label="Vocals")
-    plt.savefig('DetectedPitchComparison.png')
+    px = 1 / plt.rcParams['figure.dpi']  # pixel in inches
+
+    # Lets set the Style of the Plot
+    COLOR = 'white'
+    plt.rcParams['text.color'] = COLOR
+    plt.rcParams['axes.labelcolor'] = COLOR
+    plt.rcParams['xtick.color'] = COLOR
+    plt.rcParams['ytick.color'] = COLOR
+
+    plt.rcParams['axes.facecolor'] = 'black'
+    plt.rcParams['figure.facecolor'] = 'black'
+
+    # print("Plotting detected data")
+
+    # Instrumentals Track
+    plt.figure(figsize=(600 * px, 200 * px))
+    plt.plot(i_time, i_frequency, label="Instruments", color='#9E2AFE')
+    plt.savefig('InstrumentalTrack.png')
 
     plt.clf()
     plt.cla()
 
-    plt.plot(i_time, i_frequency, label="Instruments")
-    plt.show()
-    plt.plot(i_time, i_frequency, label="Instruments")
-    plt.savefig('DetectedPitchInstrumental.png')
+    # Vocals Track
+    plt.figure(figsize=(600 * px, 200 * px))
+    plt.plot(_time, _frequency, label="Vocals", color='#4B74EC')
+    plt.savefig('VocalTrack.png')
 
     plt.clf()
     plt.cla()
 
-    plt.plot(_time, _frequency, label="Vocals")
-    plt.show()
-    plt.plot(_time, _frequency, label="Vocals")
-    plt.savefig('DetectedPitchVocals.png')
-    print("Plot Data Saved")
+    # Comparison
+    plt.figure(figsize=(1200 * px, 200 * px))
+    plt.plot(i_time, i_frequency, label="Instruments", color='#9E2AFE')
+    plt.plot(_time, _frequency, label="Vocals", color='#4B74EC')
+    plt.savefig('PitchComparison.png')
+
+    plt.clf()
+    plt.cla()
+
+    # print("Plot Data Saved")
 
 
 SavePlots(itime, ifrequency, time, frequency)
 
-print("Beginning Comparison")
+
+# print("Beginning Comparison")
 
 
 def Filter(freq):
-    return np.where(freq < 60, 0, freq)
+    return np.where(freq < 60, 0, freq)  # bound rate
 
 
 # Get the silences
 filteredFreq = Filter(frequency)
 # Testcase
 for t, If, Vf, ff in zip(time, ifrequency, frequency, filteredFreq):
-    print(t, ",", If, ",", Vf, ",", ff, "\n")
-
-plt.plot(itime, ifrequency, label="Instruments")
-plt.plot(time, filteredFreq, label="FilteredVocals")
-plt.show()
-plt.plot(itime, ifrequency, label="Instruments")
-plt.plot(time, filteredFreq, label="FilteredVocals")
-plt.savefig('DetectedPitchVocals.png')
-print("Plot Data Saved")
+    outst = t, ",", If, ",", Vf, ",", ff, "\n"
+    # print(outst)
 
 A4 = 440
 C0 = A4 * pow(2, -4.75)
@@ -243,7 +255,8 @@ instrumentalNotation = GetNotation(ifrequency)
 midiNotation = GetMidiNotation(filteredFreq)
 
 for t, If, ff, pn, ipn, mn in zip(time, ifrequency, filteredFreq, pitchNotation, instrumentalNotation, midiNotation):
-    print(t, ",", If, ",", ff, ",", pn, ",", ipn, ",", mn, "\n")
+    oust = t, ",", If, ",", ff, ",", pn, ",", ipn, ",", mn, "\n"
+    # print(oust)
 
 
 def GetTheDifference(t, insfreq, vocfreq_raw, pitchNotation, instrumentalNotation):
@@ -251,29 +264,115 @@ def GetTheDifference(t, insfreq, vocfreq_raw, pitchNotation, instrumentalNotatio
     diff_matching_notes = []
     diff = []
     matching_chords = []
+    diff_matching_chords = []
+    diff_pitch_out = []
     pitch_outs = []
-    print("Musical Notation Comparison")
+    perfectMatches = []
+    rangeouts = []
+
+    # print("Musical Notation Comparison")
     for iF, fF, pN, iN in zip(insfreq, vocfreq, pitchNotation, instrumentalNotation):
 
-        if iF - fF != 0:
+        if iF - fF != 0 and fF != 0:  # Skipp all frequancies which is silance or the grading will have negative impact
             if pN == iN:
-                print("Matching Notes: ", iF - fF)
-                diff_matching_notes.append(iF - fF)
-                diff.append(iF - fF)
+                # Exact Note
+                # print("Matching Notes: ", iF - fF)
+                diff_matching_notes.append(abs(iF - fF))
+                diff.append(abs(iF - fF))
             else:
                 if checkMatchingChords(pN, iN):
-                    print("Matching Chord: ", pN, midiNote(fF), iN, midiNote(iF))
+                    # pitch was out of range but it is a musical chord
+                    # print("Matching Chord: ", pN, midiNote(fF), iN, midiNote(iF))
                     matching_chords.append([pN, iN])
+                    diff_matching_chords.append(abs(midiNote(fF) - midiNote(iF)))
                 else:
-                    print("Pitch-out: ", pN, midiNote(fF), iN, midiNote(iF))
-                    pitch_outs.append([pN, iN])
+                    try:
+                        # Pitch was out of range
+                        # print("Pitch-out: ", pN, midiNote(fF), iN, midiNote(iF))
+                        pitch_outs.append([pN, iN])
+                        diff_pitch_out.append(abs(midiNote(fF) - midiNote(iF)))
+                    except Exception as e:
+                        # Some error on pitch
+                        # print("Ranged out")
+                        # diff_pitch_out.append(abs(iF - fF))
+                        rangeouts.append(1)
+
         else:
-            print("Perfect Match: ", fF)
-    return diff
+            # Pitch Matched Perfectly
+            perfectMatches.append(1)
+
+    totalPitchOuts = 0
+    totalMatchedNotes = 0
+    totalMatchingChords = 0
+    totalPerfectMatches = 0
+    ## Silences are filtered from the above statements
+    # so there is no need to grade silences. that can be instrumentals only
+    if len(diff_pitch_out) != 0:
+        totalPitchOuts = len(diff_pitch_out) / len(vocfreq)
+    if len(diff_matching_notes) != 0:
+        totalMatchedNotes = sum(diff_matching_notes) / len(diff_matching_notes)
+    if len(diff_matching_chords) != 0:
+        totalMatchingChords = sum(diff_matching_chords) / len(diff_matching_chords)
+    if len(perfectMatches) != 0:
+        totalPerfectMatches = sum(perfectMatches) / len(perfectMatches)
+
+    gradeFile = open("PitchGrade.txt", "a")
+    gradeFile.write(str(totalPitchOuts) + "%" + "\n")
+    gradeFile.write(str(totalMatchedNotes) + "%" + "\n")
+    gradeFile.write(str(totalMatchingChords) + "%" + "\n")
+    gradeFile.write(str(totalPerfectMatches) + "%" + "\n")
+    gradeFile.close()
+
+    file = open("log.txt", "a")
+    file.write("Pitch Analysis" + "\n")
+
+    print("Perfect Matches AVG: ", totalPerfectMatches)  # The deference
+    file.write("Perfect Matches AVG: " + str(totalPerfectMatches) + "\n")
+    print("Matched Notes AVG: ", totalMatchedNotes)
+    file.write("Matched Notes AVG: " + str(totalMatchedNotes) + "\n")
+    print("Matching Chords AVG: ", totalMatchingChords)
+    file.write("Matching Chords AVG: " + str(totalMatchingChords) + "\n")
+    print("Pitchouts AVG: ", totalPitchOuts)
+    file.write("Pitchouts AVG: " + str(totalPitchOuts) + "\n")
+
+    print("Perfect match Grade : ", ((10 - totalPerfectMatches) if 0 < totalPerfectMatches <= 10 else 0))
+    print("Matched Note Grade : ", ((10 - totalMatchedNotes) if 0 < totalMatchedNotes <= 10 else 0))
+    print("Matching Chord Grade : ", ((10 - totalMatchingChords) if 0 < totalMatchingChords <= 10 else 0))
+    print("Pitchout Grade : ", (totalPitchOuts if 0 < totalPitchOuts < 10 else 10))
+    file.close()
+    # lets get the positive score  (if the avd of each value is > 10 that means there is a problem or that is a silence or noice)
+    positiveScore = ((10 - totalPerfectMatches) if 0 < totalPerfectMatches <= 10 else 0) + (
+        (10 - totalMatchedNotes) if 0 < totalMatchedNotes <= 10 else 0) + (
+                        (10 - totalMatchingChords) if 0 < totalMatchingChords <= 10 else 0) - (
+                        totalPitchOuts if 0 < totalPitchOuts < 10 else 10)
+    multiplier = 0  # This is to to get a equal mark for each section
+    # if the user sand without perfect matches but it matched the actual musical notes -
+    # if the user sang without chords,
+    # likewise, this will determine the multipler for singers sections
+    if totalPerfectMatches > 0:
+        multiplier += 1
+    if totalMatchedNotes > 0:
+        multiplier += 1
+    if totalMatchingChords > 0:
+        multiplier += 1
+    if multiplier > 3:
+        multiplier = 3
+    if multiplier == 0:
+        multiplier = 1
+    #print("Mul : ", multiplier)
+    grade = positiveScore / (
+                10 * multiplier) * 100  # Total is 300 as 100 for Perfect Matches, 100 for Exact note matches, 100 for matching chrords
+    return grade
 
 
+# Lets get the grading for the input data
 Grading = GetTheDifference(time, ifrequency, filteredFreq, pitchNotation, instrumentalNotation)
 
-avgGrade = sum(Grading) / len(Grading)
+print("Average Grading:", Grading, "%")
+file = open("log.txt", "a")
+file.write("Average Grading:" + str(Grading) + "%" + "\n")
+file.close()
 
-print("Average Grading For Matching Notes:", (100 - avgGrade), "%")
+file = open("PitchGrade.txt", "a")
+file.write(str(Grading) + "%" + "\n")
+file.close()
